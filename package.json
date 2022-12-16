@@ -1,0 +1,22 @@
+{
+  "name": "tsu-chiman",
+  "version": "1.0.0",
+  "description": "\"# tsu-chiman\"",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Knu334/tsu-chiman.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Knu334/tsu-chiman/issues"
+  },
+  "homepage": "https://github.com/Knu334/tsu-chiman#readme",
+  "dependencies": {
+    "discord.js": "^14.7.1"
+  }
+}
