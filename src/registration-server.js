@@ -5,11 +5,18 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const pool = require('./pool');
 
-app.use(express.static(__dirname + 'resources'));
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/resources'));
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
 app.use(express.json());
-app.set('view engine', 'ejs');
+
+if (process.env.MODE === 'local') {
+    var server = app.listen(3000, function () {
+        console.log("Node.js is listening to PORT:" + server.address().port);
+    });
+}
 
 const authTokens = require('./auth.json');
 webPush.setVapidDetails('mailto:example@example.com', authTokens.publicKey, authTokens.privateKey);
@@ -29,6 +36,10 @@ const auth = (req, res, next) => {
 app.use((err, req, res, next) => {
     res.sendStatus(500);
 })
+
+app.get("/", (req, res) => {
+    res.redirect(301, '/tsu-chiman');
+});
 
 app.get("/tsu-chiman", auth, (req, res) => {
     res.render("index", {});

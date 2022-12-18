@@ -26,12 +26,19 @@ services:
 
   tsu-chiman:
     build:
-      context: .
+      context: ./src
       args:
         GREENLOCK_EMAIL: 
         GREENLOCK_SUBJECT: 
     volumes:
         - tsu-chiman_data:/usr/src/app/greenlock.d
+    environment:
+        REGIST_PAGE_URL: 
+        POSTGRES_USER: 
+        POSTGRES_HOST: 
+        POSTGRES_PASSWORD: 
+        POSTGRES_DB: 
+        MODE: docker
     depends_on:
         - postgres
     ports:

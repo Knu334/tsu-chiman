@@ -72,7 +72,7 @@ client.on("interactionCreate", async (interaction) => {
     const token = jwt.sign(payload, authTokens.jwtSecretKey, options);
 
     if (interaction.commandName === 'tsu-chiman') {
-        await interaction.reply(`http://localhost:3000/tsu-chiman?serverId=${interaction.guild.id}&token=${token}`);
+        await interaction.reply(`${process.env.REGIST_PAGE_URL}/tsu-chiman?serverId=${interaction.guild.id}&token=${token}`);
     }
 });
 
