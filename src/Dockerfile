@@ -1,6 +1,7 @@
 FROM node:18
 WORKDIR /usr/src/app
-COPY . .
+COPY package*.json ./
+COPY src ./
 ARG GREENLOCK_EMAIL
 ARG GREENLOCK_SUBJECT
 RUN npm install && \
