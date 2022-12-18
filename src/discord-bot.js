@@ -62,6 +62,7 @@ client.on("interactionCreate", async (interaction) => {
 
     const payload = {
         displayName: interaction.member.displayName,
+        serverId: interaction.guild.id,
         createdTimestamp: interaction.createdTimestamp
     };
 
@@ -72,7 +73,8 @@ client.on("interactionCreate", async (interaction) => {
     const token = jwt.sign(payload, authTokens.jwtSecretKey, options);
 
     if (interaction.commandName === 'tsu-chiman') {
-        await interaction.reply(`${process.env.REGIST_PAGE_URL}/tsu-chiman?serverId=${interaction.guild.id}&token=${token}`);
+        await interaction.user.send(`${process.env.REGIST_PAGE_URL}/tsu-chiman?token=${token}`);
+        await interaction.reply('登録URLをDM送信しました');
     }
 });
 

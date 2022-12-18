@@ -24,10 +24,11 @@ webPush.setVapidDetails('mailto:example@example.com', authTokens.publicKey, auth
 const auth = (req, res, next) => {
     const token = req.query.token;
 
-    jwt.verify(token, authTokens.jwtSecretKey, function (err) {
+    jwt.verify(token, authTokens.jwtSecretKey, function (err, decoded) {
         if (err) {
             res.sendStatus(403)
         } else {
+            res.locals.serverId = decoded.serverId;
             next();
         }
     });
@@ -48,7 +49,7 @@ app.get("/tsu-chiman", auth, (req, res) => {
 app.post('/subscribe', auth, async (req, res) => {
     const pushSubscription = req.body;
 
-    if (!pushSubscription) {
+    if (!res.locals.serverId || !pushSubscription) {
         res.sendStatus(500);
         return;
     }
@@ -58,7 +59,7 @@ app.post('/subscribe', auth, async (req, res) => {
             "INSERT INTO push_subscription (serverid, subscription) \
             SELECT * FROM (SELECT $1::text as serverid, $2::jsonb as subscription) as tmp \
             WHERE NOT EXISTS (SELECT * FROM push_subscription WHERE serverid=$1::text AND subscription=$2::jsonb)",
-        values: [req.query.serverId, pushSubscription]
+        values: [res.locals.serverId, pushSubscription]
     };
 
     try {
