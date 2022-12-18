@@ -31,7 +31,7 @@ services:
         GREENLOCK_EMAIL: 
         GREENLOCK_SUBJECT: 
     volumes:
-        - tsu-chiman_data:./greenlock.d
+        - tsu-chiman_data:/usr/src/app/greenlock.d
     depends_on:
         - postgres
     ports:
