@@ -5,11 +5,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const pool = require('./pool');
 
-var server = app.listen(3000, function () {
-    console.log("Node.js is listening to PORT:" + server.address().port);
-});
-
-app.use(express.static('resources'));
+app.use(express.static(__dirname + 'resources'));
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
 app.use(express.json());
@@ -23,7 +19,7 @@ const auth = (req, res, next) => {
 
     jwt.verify(token, authTokens.jwtSecretKey, function (err) {
         if (err) {
-            next(err.message);
+            res.sendStatus(403)
         } else {
             next();
         }
@@ -31,7 +27,7 @@ const auth = (req, res, next) => {
 }
 
 app.use((err, req, res, next) => {
-    res.send(500, err)
+    res.sendStatus(500);
 })
 
 app.get("/tsu-chiman", auth, (req, res) => {
@@ -42,7 +38,7 @@ app.post('/subscribe', auth, async (req, res) => {
     const pushSubscription = req.body;
 
     if (!pushSubscription) {
-        res.send(500);
+        res.sendStatus(500);
         return;
     }
 
@@ -64,7 +60,9 @@ app.post('/subscribe', auth, async (req, res) => {
         res.json({ result: 'OK' });
     } catch (e) {
         console.error(e.stack);
-        res.send(500);
+        res.sendStatus(500);
         return;
     }
 });
+
+module.exports = app;

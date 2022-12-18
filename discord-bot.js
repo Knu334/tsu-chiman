@@ -66,7 +66,7 @@ client.on("interactionCreate", async (interaction) => {
     };
 
     const options = {
-        expiresIn: '5h'
+        expiresIn: '5m'
     }
 
     const token = jwt.sign(payload, authTokens.jwtSecretKey, options);

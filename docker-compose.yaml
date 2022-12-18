@@ -1,0 +1,44 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:13
+    ports:
+        - 5432:5432
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+    environment:
+        POSTGRES_USER: 
+        POSTGRES_PASSWORD: 
+        POSTGRES_DB: 
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+        - 8888:80
+    volumes:
+        - pgadmin4_data:/var/lib/pgadmin
+    environment:
+        PGADMIN_DEFAULT_EMAIL: 
+        PGADMIN_DEFAULT_PASSWORD: 
+    depends_on:
+      - postgres
+
+    tsu-chiman:
+        build:
+            context: "."
+        volumes:
+            - tsu-chiman_data:/etc/letsencrypt
+        environment:
+            GREENLOCK_EMAIL: 
+            GREENLOCK_SUBJECT: 
+        depends_on:
+            - postgres
+        ports:
+            - "80:80"
+            - "443:443"
+        restart: always
+
+volumes:
+    postgres_data:
+    pgadmin4_data:
+    tsu-chiman_data:
