@@ -23,20 +23,20 @@ services:
     depends_on:
       - postgres
 
-    tsu-chiman:
-        build:
-            context: "."
-        volumes:
-            - tsu-chiman_data:/etc/letsencrypt
-        environment:
-            GREENLOCK_EMAIL: 
-            GREENLOCK_SUBJECT: 
-        depends_on:
-            - postgres
-        ports:
-            - "80:80"
-            - "443:443"
-        restart: always
+  tsu-chiman:
+    build:
+        context: "."
+    volumes:
+        - tsu-chiman_data:/etc/letsencrypt
+    environment:
+        GREENLOCK_EMAIL: 
+        GREENLOCK_SUBJECT: 
+    depends_on:
+        - postgres
+    ports:
+        - "80:80"
+        - "443:443"
+    restart: always
 
 volumes:
     postgres_data:
