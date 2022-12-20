@@ -10,6 +10,10 @@ services:
         POSTGRES_USER: 
         POSTGRES_PASSWORD: 
         POSTGRES_DB: 
+    deploy:
+        resources:
+            limits:
+                memory: 128m
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -22,7 +26,11 @@ services:
         PGADMIN_DEFAULT_PASSWORD: 
         PGADMIN_LISTEN_ADDRESS: 0.0.0.0
     depends_on:
-      - postgres
+        - postgres
+    deploy:
+        resources:
+            limits:
+                memory: 512m
 
   tsu-chiman:
     build:
@@ -46,6 +54,10 @@ services:
         - 80:80
         - 443:443
     restart: always
+    deploy:
+        resources:
+            limits:
+                memory: 128m
 
 volumes:
     postgres_data:

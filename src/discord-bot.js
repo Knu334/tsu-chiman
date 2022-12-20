@@ -8,7 +8,7 @@ const pool = require('./pool');
 client.on('ready', async () => {
     const data = [{
         name: "tsu-chiman",
-        description: "Reply URL for registration WebPush Notification",
+        description: "Reply URL for registration of WebPush notification.",
     }];
     await client.application.commands.set(data);
     console.log('ready...');
@@ -32,26 +32,27 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             values: [newChannel.guild.id]
         };
 
-        try {
-            const qres = await pool.query(selectQuery);
+        // WebPush通知の送信先を取得する
+        let qres = await pool.query(selectQuery);
+
+        // WebPush通知を送信する
+        for (let row of qres.rows) {
             try {
-                for (let row of qres.rows) {
-                    await webPush.sendNotification(row.subscription, JSON.stringify(notification));
-                }
-            } catch (e1) {
-                const delQuery = {
-                    text: "DELETE FROM push_subscription WHERE serverid=$1::text AND subscription=$2::jsonb",
-                    values: [newChannel.guild.id, row.subscription]
-                };
-                try {
-                    await pool.query(delQuery);
-                } catch (e2) {
-                    console.log('Subscription delete error');
+                await webPush.sendNotification(row.subscription, JSON.stringify(notification));
+            } catch (e) {
+                // WebPush通知の送信先情報が期限切れの場合は該当情報を削除
+                if (e.statusCode === 410) {
+                    const delQuery = {
+                        text: "DELETE FROM push_subscription WHERE serverid=$1::text AND subscription=$2::jsonb",
+                        values: [newChannel.guild.id, row.subscription]
+                    };
+
+                    pool.query(delQuery).catch(() => {
+                        throw new Error('Subscription delete error: endpoint=' + e.endpoint);
+                    });
                 }
             }
-        } catch (e) {
-            console.error(e.stack);
-        };
+        }
     }
 });
 
