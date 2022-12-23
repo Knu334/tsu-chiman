@@ -3,8 +3,8 @@
 
     window.onload = function () {
         //パーミッションを取得するボタンクリック時
-        document.getElementById("registration_button").onclick = installServiceWorker;
-        document.getElementById("unsubscribe").onclick = unsubscribe;
+        document.querySelector('#registration_button a').onclick = installServiceWorker;
+        document.querySelector('#unsubscribe a').onclick = unsubscribe;
     };
 
     const url = new URL(window.location.href);
