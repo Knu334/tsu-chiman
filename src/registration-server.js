@@ -9,8 +9,14 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/resources'));
 app.use(express.urlencoded({ extended: false }));
-app.use(helmet());
 app.use(express.json());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            "script-src": ["'self'", 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net']
+        }
+    }
+}));
 
 if (process.env.MODE === 'local') {
     var server = app.listen(3000, function () {
@@ -69,7 +75,30 @@ app.post('/subscribe', auth, async (req, res) => {
         } else {
             console.log('Subscription insert completed.');
         }
-        res.json({ result: 'OK' });
+        res.sendStatus(200);
+    } catch (e) {
+        console.error(e.stack);
+        res.sendStatus(500);
+        return;
+    }
+});
+
+app.post('/unsubscribe', auth, async (req, res) => {
+    const pushSubscription = req.body;
+
+    if (!res.locals.serverId || !pushSubscription) {
+        res.sendStatus(500);
+        return;
+    }
+
+    const query = {
+        text: "DELETE FROM push_subscription WHERE serverid=$1::text AND subscription=$2::jsonb",
+        values: [res.locals.serverId, pushSubscription]
+    };
+
+    try {
+        await pool.query(query);
+        res.sendStatus(200);
     } catch (e) {
         console.error(e.stack);
         res.sendStatus(500);
