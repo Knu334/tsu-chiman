@@ -34,8 +34,7 @@ services:
 
   tsu-chiman:
     build:
-      context: .
-      dockerfile: src/Dockerfile
+      context: app
       args:
         GREENLOCK_EMAIL: 
         GREENLOCK_SUBJECT: 
