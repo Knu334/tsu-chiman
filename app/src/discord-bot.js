@@ -20,15 +20,22 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
 
     if (oldChannel == null && newChannel != null) {
         let members = Array.from(newChannel.members.values(), m => m.displayName);
-        let notification = {
+        const notification = {
             'title': newState.member.displayName + ' がボイスチャンネルに参加しました',
             'body': 'Member: ' + members,
             'icon': newChannel.guild.iconURL(),
             'data': 'discord://discordapp.com/channels/' + newChannel.guild.id
         };
 
+        const android = {
+            'title': newState.member.displayName + ' がボイスチャンネルに参加しました',
+            'body': 'Member: ' + members,
+            'icon': newChannel.guild.iconURL(),
+            'data': 'https://discord.com/channels/' + newChannel.guild.id
+        }
+
         const selectQuery = {
-            text: "SELECT subscription FROM push_subscription WHERE serverid=$1",
+            text: "SELECT * FROM push_subscription WHERE serverid=$1",
             values: [newChannel.guild.id]
         };
 
@@ -38,7 +45,11 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         // WebPush通知を送信する
         for (let row of qres.rows) {
             try {
-                await webPush.sendNotification(row.subscription, JSON.stringify(notification));
+                if (row.os === 0) {
+                    await webPush.sendNotification(row.subscription, JSON.stringify(notification));
+                } else if (row.os === 1) {
+                    await webPush.sendNotification(row.subscription, JSON.stringify(android));
+                }
             } catch (e) {
                 // WebPush通知の送信先情報が期限切れの場合は該当情報を削除
                 if (e.statusCode === 410) {

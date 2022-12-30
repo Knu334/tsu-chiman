@@ -1,7 +1,8 @@
-const express = require("express");
+const express = require('express');
 const helmet = require('helmet')
 const webPush = require('web-push');
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+const parser = require('ua-parser-js');
 const app = express();
 const pool = require('./pool');
 
@@ -60,12 +61,21 @@ app.post('/subscribe', auth, async (req, res) => {
         return;
     }
 
+    const ua = parser(req.headers['user-agent']);
+
+    let osFlag = 0;
+    if (ua.os.name === 'Android') {
+        osFlag = 1;
+    } else if (ua.os.name === 'iOS') {
+        osFlag = 2;
+    }
+
     const query = {
         text:
-            "INSERT INTO push_subscription (serverid, subscription) \
-            SELECT * FROM (SELECT $1::text as serverid, $2::jsonb as subscription) as tmp \
+            "INSERT INTO push_subscription (serverid, subscription, os) \
+            SELECT * FROM (SELECT $1::text as serverid, $2::jsonb as subscription, $3::integer as os) as tmp \
             WHERE NOT EXISTS (SELECT * FROM push_subscription WHERE serverid=$1::text AND subscription=$2::jsonb)",
-        values: [res.locals.serverId, pushSubscription]
+        values: [res.locals.serverId, pushSubscription, osFlag]
     };
 
     try {
