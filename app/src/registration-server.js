@@ -25,13 +25,12 @@ if (process.env.MODE === 'local') {
     });
 }
 
-const authTokens = require('./auth.json');
-webPush.setVapidDetails('mailto:example@example.com', authTokens.publicKey, authTokens.privateKey);
+webPush.setVapidDetails('mailto:example@example.com', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 
 const auth = (req, res, next) => {
     const token = req.query.token;
 
-    jwt.verify(token, authTokens.jwtSecretKey, function (err, decoded) {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, function (err, decoded) {
         if (err) {
             res.sendStatus(403)
         } else {
@@ -53,7 +52,7 @@ app.get("/tsu-chiman", auth, (req, res) => {
     res.render("index", {});
 });
 
-app.post('/subscribe', auth, async (req, res) => {
+app.post('/tsu-chiman/subscribe', auth, async (req, res) => {
     const pushSubscription = req.body;
 
     if (!res.locals.serverId || !pushSubscription) {
@@ -93,7 +92,7 @@ app.post('/subscribe', auth, async (req, res) => {
     }
 });
 
-app.post('/unsubscribe', auth, async (req, res) => {
+app.post('/tsu-chiman/unsubscribe', auth, async (req, res) => {
     const pushSubscription = req.body;
 
     if (!res.locals.serverId || !pushSubscription) {
@@ -114,6 +113,12 @@ app.post('/unsubscribe', auth, async (req, res) => {
         res.sendStatus(500);
         return;
     }
+});
+
+app.get('/tsu-chiman/vapid-pub-key', auth, (req, res) => {
+    const response = { 'publicKey': process.env.VAPID_PUBLIC_KEY };
+    res.type('application/json');
+    res.send(JSON.stringify(response));
 });
 
 module.exports = app;

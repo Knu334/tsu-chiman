@@ -3,12 +3,12 @@
 
     window.onload = function () {
         //パーミッションを取得するボタンクリック時
-        document.querySelector('#registration_button a').onclick = installServiceWorker;
+        document.querySelector('#registration_button a').onclick = subscribe;
         document.querySelector('#unsubscribe a').onclick = unsubscribe;
     };
 
     const url = new URL(window.location.href);
-    let installServiceWorker = async function () {
+    let subscribe = async function () {
         Notification.requestPermission(function (result) {
             console.log('requestPermission: ' + result);
             if (result !== 'granted') {
@@ -30,15 +30,20 @@
 
         await navigator.serviceWorker.ready;
 
-        const applicationServerPublicKey = '';
+        const applicationServerPublicKey = await window.fetch(`/tsu-chiman/vapid-pub-key?${url.searchParams}`);
+        if (applicationServerPublicKey.status !== 200) {
+            showFailed();
+            throw new Error('Failed to obtain VAPID public key.');
+        }
 
+        const pubkeyJson = await applicationServerPublicKey.json();
         const pushSubscription = await serviceWorkerRegistration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(applicationServerPublicKey)
+            applicationServerKey: urlBase64ToUint8Array(pubkeyJson.publicKey)
         });
 
         let json = pushSubscription.toJSON();
-        const response = await window.fetch(`/subscribe?${url.searchParams}`, {
+        const response = await window.fetch(`/tsu-chiman/subscribe?${url.searchParams}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(json)
@@ -61,7 +66,7 @@
             }
             if (await subscription.unsubscribe()) {
                 // 登録解除が成功
-                const response = await window.fetch(`/unsubscribe?${url.searchParams}`, {
+                const response = await window.fetch(`/tsu-chiman/unsubscribe?${url.searchParams}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(subscription.toJSON())

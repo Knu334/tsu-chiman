@@ -47,6 +47,10 @@ services:
         POSTGRES_PASSWORD: 
         POSTGRES_DB: 
         MODE: docker
+        DISCORD_TOKEN: 
+        VAPID_PUBLIC_KEY:
+        VAPID_PRIVATE_KEY:
+        JWT_SECRET_KEY:
     depends_on:
         - postgres
     ports:

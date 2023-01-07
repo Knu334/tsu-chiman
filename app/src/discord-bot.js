@@ -2,7 +2,6 @@ const webPush = require('web-push');
 const jwt = require("jsonwebtoken");
 const { Client, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
-const authTokens = require('./auth.json')
 const pool = require('./pool');
 
 client.on('ready', async () => {
@@ -82,7 +81,7 @@ client.on("interactionCreate", async (interaction) => {
         expiresIn: '5m'
     }
 
-    const token = jwt.sign(payload, authTokens.jwtSecretKey, options);
+    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, options);
 
     if (interaction.commandName === 'tsu-chiman') {
         await interaction.user.send(`${process.env.REGIST_PAGE_URL}/tsu-chiman?token=${token}`);
@@ -90,4 +89,4 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-client.login(authTokens.discordToken);
+client.login(process.env.DISCORD_TOKEN);
