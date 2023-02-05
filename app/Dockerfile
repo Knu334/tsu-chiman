@@ -5,7 +5,6 @@ ARG GREENLOCK_EMAIL
 ARG GREENLOCK_SUBJECT
 RUN npm install && \
     npx greenlock add --subject ${GREENLOCK_SUBJECT} --altnames ${GREENLOCK_SUBJECT} && \
-    npx greenlock defaults --store greenlock-store-fs --store-base-path ./greenlock.d && \
-    npx prisma migrate dev --name init
+    npx greenlock defaults --store greenlock-store-fs --store-base-path ./greenlock.d
 EXPOSE 80 443
-CMD [ "npx", "ts-node", "server.ts" ]
+CMD [ "entrypoint.sh" ]
