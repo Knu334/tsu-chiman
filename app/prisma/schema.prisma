@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model subscription {
+  serverid       String  @db.VarChar(32)
+  userid         String  @db.VarChar(32)
+  endpoint       String  @db.VarChar(256)
+  auth           String  @db.VarChar(32)
+  p256dh         String  @db.VarChar(128)
+  expirationTime String? @db.VarChar(32)
+  os             Int?    @default(0)
+
+  @@id([serverid, userid, endpoint, auth, p256dh])
+}

@@ -10,6 +10,7 @@ services:
         POSTGRES_USER: 
         POSTGRES_PASSWORD: 
         POSTGRES_DB: 
+    restart: always
     deploy:
         resources:
             limits:
@@ -27,6 +28,7 @@ services:
         PGADMIN_LISTEN_ADDRESS: 0.0.0.0
     depends_on:
         - postgres
+    restart: always
     deploy:
         resources:
             limits:
@@ -41,22 +43,21 @@ services:
     volumes:
         - tsu-chiman_data:/usr/src/app/greenlock.d
     environment:
-        REGIST_PAGE_URL: 
-        POSTGRES_USER: 
-        POSTGRES_HOST: 
-        POSTGRES_PASSWORD: 
-        POSTGRES_DB: 
+        NODE_ENV: production
+        REGIST_PAGE_URL:  
         MODE: docker
         DISCORD_TOKEN: 
-        VAPID_PUBLIC_KEY:
-        VAPID_PRIVATE_KEY:
-        JWT_SECRET_KEY:
+        VAPID_PUBLIC_KEY: 
+        VAPID_PRIVATE_KEY: 
+        JWT_SECRET_KEY: 
+        DATABASE_URL: postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public
     depends_on:
         - postgres
     ports:
         - 80:80
         - 443:443
     init: true
+    restart: always
     deploy:
         resources:
             limits:
