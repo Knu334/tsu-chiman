@@ -38,32 +38,34 @@ services:
     build:
       context: app
       args:
-        GREENLOCK_EMAIL: 
         GREENLOCK_SUBJECT: 
     volumes:
-        - tsu-chiman_data:/usr/src/app/greenlock.d
+        - greenlock_data:/usr/src/app/greenlock.d
+        - ./app/prisma/migrations:/usr/src/app/prisma/migrations
     environment:
         NODE_ENV: production
-        REGIST_PAGE_URL:  
+        REGIST_PAGE_URL: 
         MODE: docker
         DISCORD_TOKEN: 
         VAPID_PUBLIC_KEY: 
         VAPID_PRIVATE_KEY: 
         JWT_SECRET_KEY: 
         DATABASE_URL: postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public
+        GREENLOCK_EMAIL: 
     depends_on:
         - postgres
     ports:
         - 80:80
         - 443:443
     init: true
+    tty: true
     restart: always
     deploy:
         resources:
             limits:
-                memory: 128m
+                memory: 512m
 
 volumes:
     postgres_data:
     pgadmin4_data:
-    tsu-chiman_data:
+    greenlock_data:

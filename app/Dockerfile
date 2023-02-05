@@ -7,4 +7,4 @@ RUN npm install && \
     npx greenlock add --subject ${GREENLOCK_SUBJECT} --altnames ${GREENLOCK_SUBJECT} && \
     npx greenlock defaults --store greenlock-store-fs --store-base-path ./greenlock.d
 EXPOSE 80 443
-CMD [ "entrypoint.sh" ]
+CMD [ "/bin/bash", "entrypoint.sh" ]
