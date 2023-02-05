@@ -92,13 +92,6 @@ app.post("/tsu-chiman/subscribe", auth, async (req, res) => {
     osFlag = 1;
   }
 
-  const query = {
-    text: "INSERT INTO push_subscription (serverid, bodyJson, os) \
-            SELECT * FROM (SELECT $1::text as serverid, $2::jsonb as bodyJson, $3::integer as os) as tmp \
-            WHERE NOT EXISTS (SELECT * FROM push_subscription WHERE serverid=$1::text AND bodyJson=$2::jsonb)",
-    values: [res.locals.serverId, bodyJson, osFlag],
-  };
-
   try {
     const qres = await prisma.subscription.upsert({
       where: {
@@ -140,11 +133,6 @@ app.post("/tsu-chiman/unsubscribe", auth, async (req, res) => {
     return;
   }
   const bodyJson = req.body as webPush.PushSubscription;
-
-  const query = {
-    text: "DELETE FROM push_subscription WHERE serverid=$1::text AND bodyJson=$2::jsonb",
-    values: [res.locals.serverId, bodyJson],
-  };
 
   try {
     await prisma.subscription.delete({
