@@ -17,8 +17,8 @@ services:
 
 networks:
   default:
-    external:
-      name: tsu-chiman_default
+    name: tsu-chiman_default
+    external: true
 
 volumes:
     pgadmin4_data:
