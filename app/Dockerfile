@@ -1,10 +1,6 @@
-FROM node:18
+FROM node:22.14.0-bookworm-slim
 WORKDIR /usr/src/app
 COPY . .
-ARG GREENLOCK_EMAIL
-ARG GREENLOCK_SUBJECT
-RUN npm install && \
-    npx greenlock add --subject ${GREENLOCK_SUBJECT} --altnames ${GREENLOCK_SUBJECT} && \
-    npx greenlock defaults --store greenlock-store-fs --store-base-path ./greenlock.d
-EXPOSE 80 443
+RUN npm install
+EXPOSE 443
 CMD [ "/bin/bash", "entrypoint.sh" ]
