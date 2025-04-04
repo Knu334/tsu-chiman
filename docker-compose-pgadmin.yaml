@@ -1,0 +1,24 @@
+services:
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+        - 8888:80
+    volumes:
+        - pgadmin4_data:/var/lib/pgadmin
+    environment:
+        PGADMIN_DEFAULT_EMAIL: 
+        PGADMIN_DEFAULT_PASSWORD: 
+        PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+    restart: always
+    deploy:
+        resources:
+            limits:
+                memory: 512m
+
+networks:
+  default:
+    name: tsu-chiman_default
+    external: true
+
+volumes:
+    pgadmin4_data:

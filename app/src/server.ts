@@ -2,19 +2,11 @@
 
 import app from "#/app";
 
-require("greenlock-express")
-  .init({
-    packageRoot: __dirname + "/../",
-
-    // contact for security and critical bug notices
-    maintainerEmail: process.env.GREENLOCK_EMAIL,
-
-    // where to look for configuration
-    configDir: "./greenlock.d",
-
-    // whether or not to run at cloudscale
-    cluster: false,
-  })
-  // Serves on 80 and 443
-  // Get's SSL certificates magically!
-  .serve(app);
+import fs from "fs";
+import https from "https";
+const options = {
+  key: fs.readFileSync(process.env.SSL_KEY || ""),
+  cert: fs.readFileSync(process.env.SSL_CERT || ""),
+};
+const server = https.createServer(options, app);
+server.listen(Number(process.env.REGIST_PAGE_PORT) || 443);
